@@ -43,7 +43,7 @@ int main(int argc, const char * argv []) {
 위의 설명에 따라 실제 코드는 다음과 같이 작성할 수 있다.
 
 ```objectivec
-**// Vehicle_1.h**
+// Vehicle_1.h
 #import <Foundation/Foundation.h>
 
 @interface Vehicle : NSObject {
@@ -62,7 +62,7 @@ int main(int argc, const char * argv []) {
  만약 **Properties Control Access(@property)**를 사용한다면  위의 코드는 다음으로 대체될 수도 있다.
 
 ```objectivec
-**// Vehicle_2.h: Vehicle_1.h와 동일한 기능을 한다.**
+// Vehicle_2.h: Vehicle_1.h와 동일한 기능을 한다.
 #import <Foundation/Foundation.h>
 
 @interface Vehicle : NSObject {
@@ -78,7 +78,7 @@ int main(int argc, const char * argv []) {
  위의 @property는 자동으로 getter와 setter를 만들어준다. 이 때 만들어지는 함수의 이름은 “Vehicle_1.h”에서 선언된 함수와 같다. 만약 Properties Control Access를 사용하며 동시에 getter와 setter함수명을 재정의 하고 싶다면 다음과 같이 쓸 수도 있다.
 
 ```objectivec
-**// Vehicle_3.h: Vehicle_1.h, Viehicle_2와 동일한 기능을 한다.**
+// Vehicle_3.h: Vehicle_1.h, Viehicle_2와 동일한 기능을 한다.
 #import <Foundation/Foundation.h>
 
 @interface Vehicle : NSObject {
@@ -94,7 +94,7 @@ int main(int argc, const char * argv []) {
  구현부의 실제 코드는 다음과 같이 작성한다
 
 ```objectivec
-**// Vehicle.m 파일**
+// Vehicle.m 파일
 #import <Foundation/Foundation.h> // Apple에서 기본 제공하는 애들은 꺽쇠
 #import "Vehicle.h" // 본인이 직접 만든 건 쌍따옴표 사용. 
 										// 보통 1header-1method. 둘의 이름은 같고 확장자는 다름.
@@ -122,7 +122,7 @@ int main(int argc, const char * argv []) {
 parameter가 2개 이상인 함수는 다음과 같이 선언하고 구현한다.
 
 ```objectivec
-**// Test.h**
+// Test.h
 @interface Test: NSObject {
 	int value1;
 	int value2;
@@ -133,7 +133,7 @@ parameter가 2개 이상인 함수는 다음과 같이 선언하고 구현한다
 			// "**:"표시? 파라미터를 구분하는 단위**
 @end
 
-**// Test.m**
+// Test.m
 #import <Foundation/Foundation.h> 
 #import "Test.h"
 
@@ -144,4 +144,37 @@ parameter가 2개 이상인 함수는 다음과 같이 선언하고 구현한다
 }
 
 @end
+```
+
+# main함수에서 호출 방법
+
+아래 코드는 선언부&구현부에서 생성한 Vehicle 클래스를 호출하는 방법이다.
+
+```objectivec
+int main(int argc, const char * argv []) {
+    @autoreleasepool {
+// Obj-C에서는 [Receiver Message]형태로 코드를 작성한다.
+// 가령 아래의 코드는 Vehicle 자료형에게 new 메시지를 보내는 것.
+			Vehicle *hello1 = [Vehicle new]; // 자료형 Vehicle object를 동적할당하기
+
+// 하지만 위의 코드는 관례적으로 쓰지 않는다.
+// 왜냐하면 이후 배울 convenience메소드들 때문이다.
+// 그래서 보통 아래와 같이 메소드 체이닝 방식으로 작성한다.
+// 메모리에 동적할당(alloc)하는 작업과 초기화(init)하는 작업을 따로따로 하는 것이다.
+			Vehicle *hello2 = [[Vehicle alloc] init]; 
+
+			// setter1
+			[hello1 setWheels: 4];
+			[hello1 setSeats: 2];
+
+			// setter2
+			hello2.wheels = 4;
+			hello2.seats = 2;
+
+			// getter1
+			NSLog(@"wheels: %i, seats: %i", [hello1 wheels], [hello1 seats]);
+			// getter2
+			NSLog(@"wheels: %i, seats: %i", hello2.wheels, hello2.seats);
+		}
+}
 ```
