@@ -1,6 +1,6 @@
 # Basic Syntax
 
-# 선언부와 구현부
+## 선언부와 구현부
 
 Objective-C는 크게 선언부와 구현부로 나누어 코드를 작성한다.
 
@@ -146,7 +146,7 @@ parameter가 2개 이상인 함수는 다음과 같이 선언하고 구현한다
 @end
 ```
 
-# main함수에서 호출 방법
+## main함수에서 호출 방법
 
 아래 코드는 선언부&구현부에서 생성한 Vehicle 클래스를 호출하는 방법이다.
 
@@ -179,7 +179,7 @@ int main(int argc, const char * argv []) {
 }
 ```
 
-# NSString & NSMutableString
+## NSString & NSMutableString
 
 NSString과 NSMutableString은 Obj-C에서 문자열을 다룰 때 쓰는 자료형이다. 
 
@@ -262,4 +262,134 @@ int main(int argc, const char * argv[]) {
 // mstr: AGHIJKLM
     }
 }
+```
+
+## NSArray & NSMutableArray
+
+NSArray, 그리고 NSArray의 subclass인 NSMutableArray는 정렬된 collection이다. NSArray는 static이어서 immutable하지만 NSMutableArray는 dynamic하다. 둘 중 필요에 따라 쓰면 된다 .
+
+### NSArray
+
+NSArray는 동적할당 및 초기화를 하고 나면 이후 값의 변경을 할 수 없다. 동적할당과 초기화를 같이 하고자 할 때에는 다음의 함수를 쓴다.
+
+```objectivec
+- (instancetype)initWithObjects:(ObjectType)firstObj, ...;
+```
+
+용례는 다음과 같다.
+
+```objectivec
+NSArray *month = [[NSArray alloc] initWithObjects:
+                  @"January", @"Feburary", @"March",
+                  @"April", @"May", @"June", nil]; //배열의 초기화
+```
+
+이 때 마지막에 nil을 넣어 배열의 마지막을 표시해주어야 한다.
+
+배열의 값에 접근할 떄에는 다음의 함수를 쓴다.
+
+```objectivec
+- (ObjectType)objectAtIndex:(NSUInteger)index;
+```
+
+ 이 함수는 NSArray object들 중 parameter로 주어진 index에 접근하여 해당 object를 반환할 때 쓴다. 용례는 다음과 같다.
+
+```objectivec
+// 배열의 값을 빼서 쓰기
+for(int i=0; i< [month count]; i++) {
+	NSLog(@"month: %@", month[i]); //이것은 C언어 스타일이다.
+  NSLog(@"month: %@", [month objectAtIndex:i]); //이것이 obj-c 스타일
+}
+```
+
+ 하지만 이 보다 objective-c스러운 for문도 있다. 
+
+```objectivec
+// 하지만 더 obj-c스러운 코드는 for-in문 사용
+for (NSString *tmp in month) {
+	NSLog(@"month: %@", tmp); //obj-c에서 제공하는 for문. 
+}
+```
+
+for-in문은 객체 배열에 index로 접근하여 발생할 수 있는 index out of range오류의 발생가능성을 원천 차단한다.
+
+### NSMutableArray
+
+ NSArray의 subclass인 NSMutableArray는 해당 배열의 값을 변경할 수 있다(mutable). 우선 이 배열의 초기화 및 동적할당을 해보자. 이번에는 특정 배열을 복사하여 배열을 만드는 함수를 소개한다.
+
+```objectivec
++ (instancetype)arrayWithArray:(NSArray<ObjectType> *)array;
+```
+
+ 용례는 다음과 같다.
+
+```objectivec
+NSMutableArray *mmonth = [NSMutableArray arrayWithArray:month];
+	// 여기서 month는 위의 month배열이다. 
+```
+
+ subclass이기 때문에 배열 내 객체에 접근할 때에는 NSArray에서 쓰던 함수 거의 모든 것을 다 쓸 수 있다.
+
+이 때 mmonth뒤에 @“july”를 붙이고 싶다면 다음의 함수를 호출한다. NSMutableArray 객체 마지막 index에 anObject가 추가된다. 
+
+```objectivec
+- (void)addObject:(ObjectType)anObject;
+```
+
+ 용례는 다음과 같다.
+
+```objectivec
+[mmonth addObject:@"end"];
+```
+
+ 삭제함수 소개와 용례는 다음과 같다. 
+
+```objectivec
+- (void)removeObject:(ObjectType)anObject;
+// [mmonth removeObject:@"end"]; 
+// mmonth배열에 removeObject메시지를 보낸다. 
+// 이 때 parameter는 @"end"이.
+```
+
+## NSDictionary & NSMutableDictionary
+
+NSDictionary는 key-value로 이루어진 associtaitons이다. 역시 immutable하여 추가적으로 key와 Value를 업데이트할 수 없고, 정렬되어 있지 않으며 최초 초기화했던 key를 통해 value에 접근할 수 있다. 값이 없는 경우 nil이 반환된다.
+
+### NSDictionary
+
+ 선언 함수는 다음과 같다. 
+
+```objectivec
+- (instancetype)initWithObjectsAndKeys:(id)firstObject, ...;
+```
+
+ ~~여기서 자료형 id는 제네릭 타입으로 어떠한 type도 가능하다는 의미이다.~~
+
+ 용례는 다음과 같다.
+
+```objectivec
+NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:
+											@"문용", @"이름", @"1991", @"생년", nil]; //동적할당 및 초기화
+```
+
+위 정의된 dictionary에 key값을 통해 접근하는 함수와 용례는 다음과 같다.
+
+```objectivec
+- (ObjectType)objectForKey:(KeyType)aKey;
+NSLog(@"name: %@", [dic objectForKey:@"이름"]); // name: 문용
+```
+
+### NSMutableDictionary
+
+ NSDictionary와 기본적으로 유사하지만 mutable하기 때문에 key-value를 추가하거나 value를 업데이트 할 수 있다. 값이 없는 경우 nil이 반환된다. 
+ 다음은 선언함수와 용례, 업데이트하는 방법 등이 적힌 코드이다.
+
+```objectivec
+// NSDictionary를 통해 NSMutableDictionary를 할당 및 초기화
+// + (instancetype)dictionaryWithDictionary:(NSDictionary<KeyType, ObjectType>
+NSMutableDictionary *mdic = [NSMutableDictionary dictionaryWithDictionary:dic];
+[mdic setObject:@"한국" forKey:@"사는곳"]; //key-value추가
+NSLog(@"location: %@", [mdic objectForKey:@"사는곳"]); // location: 한국
+[mdic setObject: @"분당"] forKey: @"사는곳"];
+NSLog(@"location: %@", [mdic objectForKey:@"사는곳"]); // location: 분당
 ```
