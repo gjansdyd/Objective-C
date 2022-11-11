@@ -178,3 +178,88 @@ int main(int argc, const char * argv []) {
 		}
 }
 ```
+
+# NSString & NSMutableString
+
+NSString과 NSMutableString은 Obj-C에서 문자열을 다룰 때 쓰는 자료형이다. 
+
+## NSString
+
+NSString의 자료형을 가진 변수는 int type과 마찬가지로 다음과 같이 메소드 체이닝을 이용해 동적할당 및 초기화를 할 수 있다.
+
+```objectivec
+NSString *str = [[NSString alloc] init];
+str = @"This is NSString"; //문자열 앞에는 반드시 @를 적어야 한다.
+NSLog(@"str: %@", str); // 문자열 안에 문자열을 삽입할 때에는 %@문자를 쓴다.
+												// 참고: int type의 경우 "%i"를 썼었다.
+```
+
+하지만 NSString의 경우 다음과 같은 함수를 사용하여 바로 할당 및 초기화가 가능하다.
+
+```objectivec
+
+//initWith메소드? Convenience method 만들면서 초기화.
+NSString *str2 = [[NSString alloc]initWithString:@"This is NSString"]; 
+NSLog(@"str2: %@", str2); 
+```
+
+ NSString은 immutable한 자료형이다. immutable이란 말 그대로 수정 불가능하다는 뜻이다. 따라서 NSString type의 변수 중 특정 범위의 문자열에 대한 접근을 하는 함수들은 return값으로 새로운 NSString을 반환한다.
+
+```objectivec
+- (NSString *)substringFromIndex:(NSUInteger)from; // from부터 문자열 끝까지 값을 반환
+- (NSString *)substringToIndex:(NSUInteger)to; // 문자열의 시작부터 to전까지 값을 반환
+- (NSString *)substringWithRange:(NSRange)range; // 문자열 중 range에 해당하는 범위의 값을 반환
+```
+
+용례는 다음과 같다
+
+```objectivec
+NSString *str = [[NSString alloc] initWithString: @"ABCDEFG"];
+NSString *result1 = [str substringFromIndex: 3];
+NSString *result2 = [str substringToIndex: 3];
+NSString *result3 = [str substringWithRange: NSMakeRange(3, 3)];
+NSLog(@"result1: %@", result1); // result1: DEFG
+NSLog(@"result2: %@", result2); // result2: ABC
+NSLog(@"result3: %@", result3); // result3: DEF
+```
+
+## NSMutableString
+
+ NSMutableString은 다음과 같이 초기화할 수 있다.
+
+```objectivec
+// + (instancetype)stringWithString:(NSString *)string;
+NSMutableString *mstr = [NSMutableString stringWithString: @"ABCDEFG"];
+```
+
+ NSMutableString은 mutable한 자료형 즉, 자기 자신이 현재 갖고 있는 value가 변경될 수 있는 자료형이다. NSString의 함수들이 새로운 NSString type의 value를 return하는 것과 달리 NSMutableString내 함수들은 자신의 값을 변화 시킬 수 있다. 가령, 위의 mstr의 특정 index에 있는 문자를 더하거나 빼기 위해서는 다음 메시지(메소드)를 보낸다.
+
+```objectivec
+- (void)appendString:(NSString *)aString; // 현재 mutableString 맨 뒤에 aString을 덧붙인다
+- (void)insertString:(NSString *)aString
+             atIndex:(NSUInteger)loc;     // 현재 mutableString의 loc에 해당하는 index에 aString을 삽입한다
+- (void)deleteCharactersInRange:(NSRange)range; // 현재 mutableString 중 range범위에 해당하는 character들을 삭제한다
+```
+
+ 위 함수들의 용례는 다음과 같다.
+
+```objectivec
+#import <Foundation/Foundation.h>
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        NSMutableString *mstr = [NSMutableString stringWithString: @"ABCDEFG"];
+        NSLog(@"mstr: %@", mstr); 
+//mstr: ABCDEFG
+        [mstr appendString:@"KLM"];
+        NSLog(@"mstr: %@", mstr); 
+// mstr: ABCDEFGKLM
+        [mstr insertString: @"HIJ" atIndex:7];
+        NSLog(@"mstr: %@", mstr); 
+// mstr: ABCDEFGHIJKLM
+        [mstr deleteCharactersInRange:NSMakeRange(1, 5)];
+        NSLog(@"mstr: %@", mstr); 
+// mstr: AGHIJKLM
+    }
+}
+```
